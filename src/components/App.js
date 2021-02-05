@@ -7,49 +7,41 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      movies: props.movies,
-      searchBarInput: '',
-      submitButtonClicked: false,
-      lastSearchValue: ''
+      movies: [],
+      searchTerm: ''
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.clearSearch = this.clearSearch.bind(this);
+    this.searchTermUpdate = this.searchTermUpdate.bind(this);
+    this.addMovie = this.addMovie.bind(this);
+    this.toggleWatchedProp = this.toggleWatchedProp.bind(this);
+  }
+
+  searchTermUpdate(input) {
+    this.setState({searchTerm: input});
+  }
+
+  addMovie(input) {
+    let moviesCopy = this.state.movies.slice();
+    moviesCopy.push({title: input, watched: false});
+    this.setState({movies: moviesCopy});
+  }
+
+  toggleWatchedProp() {
+    let moviesCopy = this.state.movies.slice();
+    for (let movie of moviesCopy) {
+      if (movie.title === event.target.previousSibling.innerHTML) {
+        movie.watched = !movie.watched;
+        break;
+      }
     }
-
-  handleChange(event) {
-    let searchResult = this.props.movies.filter((movie) =>  movie.title.toLowerCase().includes(event.target.value.toLowerCase()))
-    this.setState({
-      searchBarInput: event.target.value,
-      movies: searchResult,
-      submitButtonClicked: false
-    })
-  }
-
-  handleSubmit(event) {
-    let lastSearchString = this.state.searchBarInput;
-    this.setState({
-      searchBarInput: '',
-      submitButtonClicked: true,
-      lastSearchValue: lastSearchString
-    })
-    event.preventDefault();
-  }
-
-  clearSearch(event) {
-    this.setState({
-      movies: this.props.movies,
-      submitButtonClicked: false
-    })
-    event.preventDefault();
+    this.setState({movies: moviesCopy})
   }
 
   render(){
     return (
       <div>
-        <AddMovieBar />
-        <SearchBar value={this.state.searchBarInput} handleTyping={this.handleChange} handleSubmit={this.handleSubmit} submitButtonClicked={this.state.submitButtonClicked} lastSearch={this.state.lastSearchValue} clearSearch={this.clearSearch} />
-        <MovieList movies={this.state.movies} />
+        <AddMovieBar addMovie={this.addMovie} />
+        <SearchBar searchTermUpdate={this.searchTermUpdate}/>
+        <MovieList movies={this.state.movies} searchTerm={this.state.searchTerm} toggleWatchedProp={this.toggleWatchedProp}/>
       </div>
   )}
 }
